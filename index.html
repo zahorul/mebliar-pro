@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="uk">
 <head>
@@ -8,67 +7,377 @@
 <title>Мебляр PRO</title>
 
 <style>
+
 body {
     font-family: Arial, sans-serif;
     background:#111827;
     color:white;
-    padding:20px;
+    padding:16px;
+}
+
+h1 {
+    text-align:center;
 }
 
 .card {
     background:#1f2937;
     padding:20px;
-    border-radius:16px;
+    border-radius:18px;
+    margin-bottom:20px;
+}
+
+label {
+    display:block;
+    margin-top:12px;
+    color:#cbd5e1;
 }
 
 input, select, button {
+
     width:100%;
     padding:14px;
-    margin-top:10px;
+    margin-top:6px;
     border-radius:10px;
     border:none;
+    font-size:16px;
+
 }
 
 button {
+
     background:#2563eb;
     color:white;
-    font-size:18px;
+    margin-top:20px;
+    font-weight:bold;
+
 }
+
+
+.result {
+
+    background:#0f172a;
+    padding:15px;
+    border-radius:12px;
+    margin-top:15px;
+
+}
+
+.part {
+
+    border-bottom:1px solid #334155;
+    padding:8px 0;
+
+}
+
+.price {
+
+    font-size:24px;
+    color:#4ade80;
+    font-weight:bold;
+
+}
+
 </style>
 
 </head>
 
+
 <body>
 
-<h1>Мебляр PRO</h1>
+
+<h1>🪚 Мебляр PRO</h1>
+
 
 <div class="card">
 
-<h2>Нова нижня тумба</h2>
+<h2>Нижня кухонна тумба</h2>
 
-<label>Ширина мм</label>
-<input value="600">
 
-<label>Висота мм</label>
-<input value="720">
+<label>
+Ширина (мм)
+</label>
 
-<label>Глибина мм</label>
-<input value="560">
+<input id="width" value="600">
 
-<label>Матеріал</label>
 
-<select>
-<option>Egger ДСП 18 мм</option>
-<option>Kronospan ДСП 18 мм</option>
-<option>Swiss Krono ДСП 18 мм</option>
+<label>
+Висота (мм)
+</label>
+
+<input id="height" value="720">
+
+
+<label>
+Глибина (мм)
+</label>
+
+<input id="depth" value="560">
+
+
+
+<label>
+Матеріал корпусу
+</label>
+
+<select id="material">
+
+<option value="950">
+Egger ДСП 18 мм — 950 грн/м²
+</option>
+
+<option value="800">
+Kronospan ДСП 18 мм — 800 грн/м²
+</option>
+
+<option value="750">
+Swiss Krono ДСП 18 мм — 750 грн/м²
+</option>
+
 </select>
 
 
-<button>
-Розрахувати
+
+<label>
+Коефіцієнт
+</label>
+
+<input id="factor" value="1.65">
+
+
+<button onclick="calculate()">
+РОЗРАХУВАТИ
 </button>
 
+
 </div>
+
+
+
+<div class="card">
+
+<h2>Результат</h2>
+
+<div id="result">
+Очікування розрахунку...
+</div>
+
+
+</div>
+
+
+
+<script>
+
+
+function calculate(){
+
+
+let width =
+Number(document.getElementById("width").value);
+
+
+let height =
+Number(document.getElementById("height").value);
+
+
+let depth =
+Number(document.getElementById("depth").value);
+
+
+let materialPrice =
+Number(document.getElementById("material").value);
+
+
+let factor =
+Number(document.getElementById("factor").value);
+
+
+
+/*
+Розрахунок деталей
+
+ДСП 18 мм
+
+2 боки
+дно
+2 царги
+
+*/
+
+
+let parts = [];
+
+
+let totalArea = 0;
+
+
+
+function addPart(name,w,h,qty){
+
+
+let area =
+(w*h/1000000)*qty;
+
+
+totalArea += area;
+
+
+parts.push({
+
+name,
+w,
+h,
+qty,
+area:area.toFixed(3)
+
+});
+
+
+}
+
+
+
+addPart(
+"Стійка ліва",
+depth,
+height,
+1
+);
+
+
+addPart(
+"Стійка права",
+depth,
+height,
+1
+);
+
+
+
+addPart(
+"Дно",
+width-36,
+depth-36,
+1
+);
+
+
+
+addPart(
+"Царга верхня",
+width-36,
+100,
+2
+);
+
+
+
+let waste =
+totalArea*0.10;
+
+
+let materialArea =
+totalArea+waste;
+
+
+
+let cost =
+materialArea*materialPrice;
+
+
+let finalPrice =
+cost*factor;
+
+
+
+let html = "";
+
+
+html += "<h3>Деталі:</h3>";
+
+
+
+parts.forEach(p=>{
+
+
+html += `
+
+<div class="part">
+
+<b>${p.name}</b><br>
+
+${p.qty} шт.
+
+<br>
+
+${p.w} × ${p.h} мм
+
+<br>
+
+Площа: ${p.area} м²
+
+</div>
+
+`;
+
+});
+
+
+
+html += `
+
+<div class="result">
+
+ДСП:
+
+<b>${materialArea.toFixed(2)} м²</b>
+
+<br><br>
+
+Відходи:
+
+10%
+
+<br><br>
+
+Собівартість:
+
+<b>${cost.toFixed(0)} грн</b>
+
+<br><br>
+
+
+Коефіцієнт:
+
+${factor}
+
+
+<br><br>
+
+
+<div class="price">
+
+Ціна:
+
+${finalPrice.toFixed(0)} грн
+
+</div>
+
+
+</div>
+
+`;
+
+
+
+document.getElementById("result").innerHTML = html;
+
+
+}
+
+
+</script>
+
 
 </body>
 </html>
