@@ -25,7 +25,7 @@ h1 {
     background:#1f2937;
     padding:20px;
     border-radius:18px;
-    margin-bottom:20px;
+    margin-bottom:18px;
 }
 
 label {
@@ -54,26 +54,24 @@ button {
 
 }
 
-.result {
-
-background:#0f172a;
-padding:15px;
-border-radius:12px;
-
-}
-
 .item {
 
-padding:10px 0;
-border-bottom:1px solid #334155;
+    border-bottom:1px solid #334155;
+    padding:12px 0;
 
 }
 
 .total {
 
-font-size:24px;
-color:#4ade80;
-font-weight:bold;
+    font-size:24px;
+    color:#4ade80;
+    font-weight:bold;
+
+}
+
+.small {
+
+    color:#94a3b8;
 
 }
 
@@ -88,34 +86,39 @@ font-weight:bold;
 <h1>🪚 Мебляр PRO</h1>
 
 
+
 <div class="card">
 
-<h2>Нижня тумба</h2>
+<h2>Проєкт</h2>
+
+<p>
+Нижня кухонна тумба
+</p>
 
 
 <label>
-Ширина мм
+Ширина модуля (мм)
 </label>
 
 <input id="width" value="600">
 
 
 <label>
-Висота мм
+Висота модуля (мм)
 </label>
 
 <input id="height" value="720">
 
 
 <label>
-Глибина мм
+Глибина модуля (мм)
 </label>
 
 <input id="depth" value="560">
 
 
 <label>
-ДСП корпус
+Матеріал корпусу
 </label>
 
 <select id="board">
@@ -135,31 +138,40 @@ Swiss Krono ДСП 18 мм — 750 грн/м²
 </select>
 
 
+</div>
+
+
+
+
+<div class="card">
+
+<h2>🚪 Фасад</h2>
+
 
 <label>
-Фасад
+Тип фасаду
 </label>
 
 
-<select id="front">
+<select id="facade">
 
 
-<option value="1200">
-ДСП фасад — 1200 грн/м²
-</option>
-
-
-<option value="3500">
+<option value="3500" data-edge="false">
 МДФ фарбований — 3500 грн/м²
 </option>
 
 
-<option value="2200">
+<option value="2200" data-edge="false">
 МДФ плівка — 2200 грн/м²
 </option>
 
 
-<option value="4200">
+<option value="1200" data-edge="true">
+ДСП фасад — 1200 грн/м²
+</option>
+
+
+<option value="4200" data-edge="true">
 Акрил — 4200 грн/м²
 </option>
 
@@ -167,21 +179,47 @@ Swiss Krono ДСП 18 мм — 750 грн/м²
 </select>
 
 
+<p class="small">
+
+Кількість:
+1 шт
+
+<br>
+
+Зазор:
+2 мм по периметру
+
+</p>
+
+
+</div>
+
+
+
+
+<div class="card">
+
+
+<h2>💰 Розрахунок</h2>
+
 
 <label>
 Коефіцієнт
 </label>
 
+
 <input id="factor" value="1.65">
 
 
-
 <button onclick="calculate()">
+
 РОЗРАХУВАТИ
+
 </button>
 
 
 </div>
+
 
 
 
@@ -190,10 +228,14 @@ Swiss Krono ДСП 18 мм — 750 грн/м²
 <h2>Результат</h2>
 
 <div id="result">
+
 Очікування...
-</div>
 
 </div>
+
+
+</div>
+
 
 
 
@@ -207,19 +249,19 @@ function calculate(){
 let width =
 Number(document.getElementById("width").value);
 
+
 let height =
 Number(document.getElementById("height").value);
+
 
 let depth =
 Number(document.getElementById("depth").value);
 
 
+
 let boardPrice =
 Number(document.getElementById("board").value);
 
-
-let frontPrice =
-Number(document.getElementById("front").value);
 
 
 let factor =
@@ -227,9 +269,23 @@ Number(document.getElementById("factor").value);
 
 
 
-let parts = [];
+let facadeSelect =
+document.getElementById("facade");
 
-let boardArea = 0;
+
+let facadePrice =
+Number(facadeSelect.value);
+
+
+
+let facadeName =
+facadeSelect.options[facadeSelect.selectedIndex].text;
+
+
+
+let parts=[];
+
+let boardArea=0;
 
 
 
@@ -291,16 +347,12 @@ width-36,
 
 
 
-
-
 let waste =
 boardArea*0.10;
 
 
-
 let boardCost =
 (boardArea+waste)*boardPrice;
-
 
 
 
@@ -316,27 +368,27 @@ hdfArea*350;
 
 
 
-// фасад
+// ФАСАД
 
-let frontWidth =
+let facadeWidth =
 width-4;
 
 
-let frontHeight =
+let facadeHeight =
 height-4;
 
 
-let frontArea =
-(frontWidth*frontHeight)/1000000;
+let facadeArea =
+(facadeWidth*facadeHeight)/1000000;
 
 
-let frontCost =
-frontArea*frontPrice;
+let facadeCost =
+facadeArea*facadePrice;
 
 
 
 
-// фурнітура
+// ФУРНІТУРА
 
 let hinges = 2;
 
@@ -345,16 +397,15 @@ hinges*120;
 
 
 
-let totalCost =
+let total =
 boardCost+
 hdfCost+
-frontCost+
+facadeCost+
 hardwareCost;
 
 
-
-let finalPrice =
-totalCost*factor;
+let clientPrice =
+total*factor;
 
 
 
@@ -362,75 +413,87 @@ let html="";
 
 
 
-html += "<h3>Деталі корпусу</h3>";
-
-
-
-parts.forEach(p=>{
-
-
 html+=`
+
+<h3>📦 Корпус</h3>
 
 <div class="item">
 
-<b>${p.name}</b><br>
+ДСП:
 
-${p.qty} шт.
-
-<br>
-
-${p.w} × ${p.h} мм
+${boardArea.toFixed(3)} м²
 
 <br>
 
-${p.area.toFixed(3)} м²
+Відходи:
+
+10%
+
+<br>
+
+Вартість:
+
+<b>${boardCost.toFixed(0)} грн</b>
 
 </div>
 
 `;
 
-});
 
+
+html+=`
+
+<h3>🚪 Фасад</h3>
+
+<div class="item">
+
+Тип:
+
+${facadeName}
+
+<br><br>
+
+Розмір:
+
+${facadeWidth} × ${facadeHeight} мм
+
+<br>
+
+Площа:
+
+${facadeArea.toFixed(3)} м²
+
+<br>
+
+Ціна:
+
+${facadePrice} грн/м²
+
+<br><br>
+
+Вартість фасаду:
+
+<b>${facadeCost.toFixed(0)} грн</b>
+
+<br>
+
+Крайка:
+
+${facadeName.includes("фарбований") 
+? "Не застосовується"
+: "Потрібна"}
+
+</div>
+
+`;
 
 
 
 html+=`
 
-<div class="item">
-
-<b>ХДФ</b><br>
-
-${hdfArea.toFixed(3)} м²
-
-<br>
-
-${hdfCost.toFixed(0)} грн
-
-</div>
-
-
+<h3>🔩 Фурнітура</h3>
 
 <div class="item">
-
-<b>Фасад</b><br>
-
-${frontWidth} × ${frontHeight} мм
-
-<br>
-
-${frontArea.toFixed(3)} м²
-
-<br>
-
-${frontCost.toFixed(0)} грн
-
-</div>
-
-
-
-<div class="item">
-
-<b>Фурнітура</b><br>
 
 Blum Clip Top
 
@@ -444,40 +507,34 @@ ${hardwareCost} грн
 
 </div>
 
+`;
 
 
-<br>
 
+html+=`
 
-Корпус ДСП:
+<h3>Підсумок</h3>
 
-${boardCost.toFixed(0)} грн
-
-
-<br><br>
-
+<div class="item">
 
 Собівартість:
 
-<b>${totalCost.toFixed(0)} грн</b>
-
+<b>${total.toFixed(0)} грн</b>
 
 <br><br>
-
 
 Коефіцієнт:
 
 ${factor}
 
-
-<br><br>
+</div>
 
 
 <div class="total">
 
 Ціна клієнта:
 
-${finalPrice.toFixed(0)} грн
+${clientPrice.toFixed(0)} грн
 
 </div>
 
@@ -486,7 +543,6 @@ ${finalPrice.toFixed(0)} грн
 
 
 document.getElementById("result").innerHTML=html;
-
 
 
 }
