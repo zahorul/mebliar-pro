@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -47,33 +49,31 @@ button {
 
     background:#2563eb;
     color:white;
-    margin-top:20px;
     font-weight:bold;
+    margin-top:20px;
 
 }
-
 
 .result {
 
-    background:#0f172a;
-    padding:15px;
-    border-radius:12px;
-    margin-top:15px;
+background:#0f172a;
+padding:15px;
+border-radius:12px;
 
 }
 
-.part {
+.item {
 
-    border-bottom:1px solid #334155;
-    padding:8px 0;
+padding:10px 0;
+border-bottom:1px solid #334155;
 
 }
 
-.price {
+.total {
 
-    font-size:24px;
-    color:#4ade80;
-    font-weight:bold;
+font-size:24px;
+color:#4ade80;
+font-weight:bold;
 
 }
 
@@ -90,36 +90,35 @@ button {
 
 <div class="card">
 
-<h2>Нижня кухонна тумба</h2>
+<h2>Нижня тумба</h2>
 
 
 <label>
-Ширина (мм)
+Ширина мм
 </label>
 
 <input id="width" value="600">
 
 
 <label>
-Висота (мм)
+Висота мм
 </label>
 
 <input id="height" value="720">
 
 
 <label>
-Глибина (мм)
+Глибина мм
 </label>
 
 <input id="depth" value="560">
 
 
-
 <label>
-Матеріал корпусу
+ДСП корпус
 </label>
 
-<select id="material">
+<select id="board">
 
 <option value="950">
 Egger ДСП 18 мм — 950 грн/м²
@@ -138,10 +137,43 @@ Swiss Krono ДСП 18 мм — 750 грн/м²
 
 
 <label>
+Фасад
+</label>
+
+
+<select id="front">
+
+
+<option value="1200">
+ДСП фасад — 1200 грн/м²
+</option>
+
+
+<option value="3500">
+МДФ фарбований — 3500 грн/м²
+</option>
+
+
+<option value="2200">
+МДФ плівка — 2200 грн/м²
+</option>
+
+
+<option value="4200">
+Акрил — 4200 грн/м²
+</option>
+
+
+</select>
+
+
+
+<label>
 Коефіцієнт
 </label>
 
 <input id="factor" value="1.65">
+
 
 
 <button onclick="calculate()">
@@ -158,11 +190,11 @@ Swiss Krono ДСП 18 мм — 750 грн/м²
 <h2>Результат</h2>
 
 <div id="result">
-Очікування розрахунку...
+Очікування...
 </div>
 
-
 </div>
+
 
 
 
@@ -175,17 +207,19 @@ function calculate(){
 let width =
 Number(document.getElementById("width").value);
 
-
 let height =
 Number(document.getElementById("height").value);
-
 
 let depth =
 Number(document.getElementById("depth").value);
 
 
-let materialPrice =
-Number(document.getElementById("material").value);
+let boardPrice =
+Number(document.getElementById("board").value);
+
+
+let frontPrice =
+Number(document.getElementById("front").value);
 
 
 let factor =
@@ -193,22 +227,9 @@ Number(document.getElementById("factor").value);
 
 
 
-/*
-Розрахунок деталей
-
-ДСП 18 мм
-
-2 боки
-дно
-2 царги
-
-*/
-
-
 let parts = [];
 
-
-let totalArea = 0;
+let boardArea = 0;
 
 
 
@@ -219,7 +240,7 @@ let area =
 (w*h/1000000)*qty;
 
 
-totalArea += area;
+boardArea += area;
 
 
 parts.push({
@@ -228,7 +249,7 @@ name,
 w,
 h,
 qty,
-area:area.toFixed(3)
+area
 
 });
 
@@ -238,7 +259,7 @@ area:area.toFixed(3)
 
 
 addPart(
-"Стійка ліва",
+"Ліва стійка",
 depth,
 height,
 1
@@ -246,12 +267,11 @@ height,
 
 
 addPart(
-"Стійка права",
+"Права стійка",
 depth,
 height,
 1
 );
-
 
 
 addPart(
@@ -262,9 +282,8 @@ depth-36,
 );
 
 
-
 addPart(
-"Царга верхня",
+"Верхня царга",
 width-36,
 100,
 2
@@ -272,37 +291,87 @@ width-36,
 
 
 
+
+
 let waste =
-totalArea*0.10;
-
-
-let materialArea =
-totalArea+waste;
+boardArea*0.10;
 
 
 
-let cost =
-materialArea*materialPrice;
+let boardCost =
+(boardArea+waste)*boardPrice;
+
+
+
+
+// ХДФ
+
+let hdfArea =
+(width*height)/1000000;
+
+
+let hdfCost =
+hdfArea*350;
+
+
+
+
+// фасад
+
+let frontWidth =
+width-4;
+
+
+let frontHeight =
+height-4;
+
+
+let frontArea =
+(frontWidth*frontHeight)/1000000;
+
+
+let frontCost =
+frontArea*frontPrice;
+
+
+
+
+// фурнітура
+
+let hinges = 2;
+
+let hardwareCost =
+hinges*120;
+
+
+
+let totalCost =
+boardCost+
+hdfCost+
+frontCost+
+hardwareCost;
+
 
 
 let finalPrice =
-cost*factor;
+totalCost*factor;
 
 
 
-let html = "";
+let html="";
 
 
-html += "<h3>Деталі:</h3>";
+
+html += "<h3>Деталі корпусу</h3>";
 
 
 
 parts.forEach(p=>{
 
 
-html += `
+html+=`
 
-<div class="part">
+<div class="item">
 
 <b>${p.name}</b><br>
 
@@ -314,7 +383,7 @@ ${p.w} × ${p.h} мм
 
 <br>
 
-Площа: ${p.area} м²
+${p.area.toFixed(3)} м²
 
 </div>
 
@@ -324,25 +393,74 @@ ${p.w} × ${p.h} мм
 
 
 
-html += `
 
-<div class="result">
+html+=`
 
-ДСП:
+<div class="item">
 
-<b>${materialArea.toFixed(2)} м²</b>
+<b>ХДФ</b><br>
+
+${hdfArea.toFixed(3)} м²
+
+<br>
+
+${hdfCost.toFixed(0)} грн
+
+</div>
+
+
+
+<div class="item">
+
+<b>Фасад</b><br>
+
+${frontWidth} × ${frontHeight} мм
+
+<br>
+
+${frontArea.toFixed(3)} м²
+
+<br>
+
+${frontCost.toFixed(0)} грн
+
+</div>
+
+
+
+<div class="item">
+
+<b>Фурнітура</b><br>
+
+Blum Clip Top
+
+<br>
+
+${hinges} шт.
+
+<br>
+
+${hardwareCost} грн
+
+</div>
+
+
+
+<br>
+
+
+Корпус ДСП:
+
+${boardCost.toFixed(0)} грн
+
 
 <br><br>
 
-Відходи:
-
-10%
-
-<br><br>
 
 Собівартість:
 
-<b>${cost.toFixed(0)} грн</b>
+<b>${totalCost.toFixed(0)} грн</b>
+
 
 <br><br>
 
@@ -355,14 +473,11 @@ ${factor}
 <br><br>
 
 
-<div class="price">
+<div class="total">
 
-Ціна:
+Ціна клієнта:
 
 ${finalPrice.toFixed(0)} грн
-
-</div>
-
 
 </div>
 
@@ -370,7 +485,8 @@ ${finalPrice.toFixed(0)} грн
 
 
 
-document.getElementById("result").innerHTML = html;
+document.getElementById("result").innerHTML=html;
+
 
 
 }
@@ -380,4 +496,5 @@ document.getElementById("result").innerHTML = html;
 
 
 </body>
+
 </html>
